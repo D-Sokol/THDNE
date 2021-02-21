@@ -17,3 +17,7 @@ class UnicodeRange(Dataset):
         # TODO: some transformation
         return symbol
 
+
+def get_CJK() -> UnicodeRange:
+    return UnicodeRange(0x4e00, 0x9fd6)
+
