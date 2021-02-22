@@ -1,4 +1,15 @@
+import numpy as np
+from PIL import Image, ImageDraw, ImageFont
+import torch
 from torch.utils.data import Dataset
+
+
+def render_char(char: str, size=128, font_path="SimSun.ttf") -> Image.Image:
+    img = Image.new("L", (size, size), 'white')
+    drawer = ImageDraw.Draw(img)
+    font = ImageFont.truetype(font_path, size)
+    drawer.text((0, 0), char, font=font)
+    return img
 
 
 class UnicodeRange(Dataset):
@@ -14,8 +25,9 @@ class UnicodeRange(Dataset):
         if not 0 <= ix < self._end:
             raise IndexError
         symbol = chr(self._begin + ix)
-        # TODO: some transformation
-        return symbol
+        image = np.array(render_char(symbol), dtype=np.float32)
+        image /= 255.
+        return torch.as_tensor(image)
 
 
 def get_CJK() -> UnicodeRange:
