@@ -13,7 +13,7 @@ class Reshape(nn.Module):
         return inp.view(self.shape)
 
 
-def get_discriminator(embedding_size=256):
+def get_discriminator():
     # TODO: expects input tensor of shape (batch, 1, 32, 32)
     return nn.Sequential(
         nn.Conv2d(1, 16, (5,5)),
@@ -25,7 +25,7 @@ def get_discriminator(embedding_size=256):
         nn.MaxPool2d(2),
         nn.LeakyReLU(),
         nn.Flatten(),
-        nn.Linear(1024, embedding_size)
+        nn.Linear(1024, 1)
     )
 
 
