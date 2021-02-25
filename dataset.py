@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, IterableDataset
 
 
 def render_char(char: str, size=128, font_path="SimSun.ttf") -> Image.Image:
@@ -30,6 +30,21 @@ class UnicodeRange(Dataset):
         return torch.as_tensor(image)
 
 
+class GaussNoise(IterableDataset):
+    def __init__(self, shape):
+        super().__init__()
+        self.shape = shape
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return torch.randn(*self.shape)
+
+
 def get_CJK() -> UnicodeRange:
     return UnicodeRange(0x4e00, 0x9fd6)
+
+def get_noise(shape) -> GaussNoise:
+    return GaussNoise(shape)
 
