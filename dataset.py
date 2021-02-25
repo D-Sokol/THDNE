@@ -13,10 +13,12 @@ def render_char(char: str, size=128, font_path="SimSun.ttf") -> Image.Image:
 
 
 class UnicodeRange(Dataset):
-    def __init__(self, begin, end):
+    def __init__(self, begin, end, size=128):
+        super().__init__()
         assert end >= begin
         self._begin = begin
         self._end = end
+        self._size = size
 
     def __len__(self):
         return self._end - self._begin
@@ -25,7 +27,7 @@ class UnicodeRange(Dataset):
         if not 0 <= ix < self._end:
             raise IndexError
         symbol = chr(self._begin + ix)
-        image = np.array(render_char(symbol), dtype=np.float32)
+        image = np.array(render_char(symbol, size=self._size), dtype=np.float32)
         image /= 255.
         return torch.as_tensor(image)
 
@@ -42,8 +44,8 @@ class GaussNoise(IterableDataset):
         return torch.randn(*self.shape)
 
 
-def get_CJK() -> UnicodeRange:
-    return UnicodeRange(0x4e00, 0x9fd6)
+def get_CJK(size) -> UnicodeRange:
+    return UnicodeRange(0x4e00, 0x9fd6, size=size)
 
 def get_noise(shape) -> GaussNoise:
     return GaussNoise(shape)
