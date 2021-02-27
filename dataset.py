@@ -29,7 +29,8 @@ class UnicodeRange(Dataset):
         symbol = chr(self._begin + ix)
         image = np.array(render_char(symbol, size=self._size), dtype=np.float32)
         image /= 255.
-        return torch.as_tensor(image)
+        # Returns one-channel image of shape (1, size, size)
+        return torch.as_tensor(image)[None]
 
 
 class GaussNoise(IterableDataset):

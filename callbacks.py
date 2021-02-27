@@ -49,7 +49,7 @@ def render_histograms(disc, gen, real_dataset, noise_dataset, count=512,
     noise_loader = DataLoader(noise_dataset, batch_size=count)
     data_loader = DataLoader(real_dataset, batch_size=count)
 
-    real_batch = next(iter(data_loader)).unsqueeze(1)
+    real_batch = next(iter(data_loader))
     fake_batch = gen(next(iter(noise_loader)))
 
     with torch.no_grad():

@@ -23,7 +23,6 @@ def train(disc, gen, real_dataset, noise_dataset, n_iter=100, k=5, batch_size=10
         for noise_batch, real_batch in itertools.islice(zip(noise_loader, data_loader), k):
             logging.debug('D-iteration')
             with torch.no_grad():
-                real_batch = real_batch.unsqueeze(1)
                 fake_batch = gen(noise_batch)
                 batch = torch.cat((fake_batch, real_batch))
             logits = disc(batch).squeeze(-1)
