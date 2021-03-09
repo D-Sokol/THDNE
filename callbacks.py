@@ -2,7 +2,7 @@ import itertools
 import matplotlib.pyplot as plt
 import pathlib
 import torch
-
+from torch.utils.data import DataLoader
 
 def _filename(directory, label=None, for_disc: bool=True):
     path = pathlib.Path(directory)
@@ -53,8 +53,8 @@ def render_histograms(disc, gen, real_dataset, noise_dataset, count=512,
     fake_batch = gen(next(iter(noise_loader)))
 
     with torch.no_grad():
-        probas_real_is_real = torch.sigmoid(disc(real_batch).squeeze(-1))
-        probas_fake_is_real = torch.sigmoid(disc(fake_batch).squeeze(-1))
+        probas_real_is_real = torch.sigmoid(disc(real_batch).squeeze(-1)).cpu().numpy()
+        probas_fake_is_real = torch.sigmoid(disc(fake_batch).squeeze(-1)).cpu().numpy()
 
     plt.subplot(1, 2, 1)
     plt.hist(probas_real_is_real)
