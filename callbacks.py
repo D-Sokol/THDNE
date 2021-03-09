@@ -20,8 +20,10 @@ def save_models(disc, gen, directory=pathlib.Path(), label=None):
     torch.save(gen.state_dict(), _filename(directory, label, False))
 
 
+# TODO: refactor: swap first 2 arguments and add '=None'
 def load_models(disc, gen, directory=pathlib.Path(), label=None):
-    disc.load_state_dict(torch.load(_filename(directory, label, True)))
+    if disc is not None:
+        disc.load_state_dict(torch.load(_filename(directory, label, True)))
     gen.load_state_dict(torch.load(_filename(directory, label, False)))
 
 

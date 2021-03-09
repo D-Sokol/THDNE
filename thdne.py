@@ -78,5 +78,9 @@ if __name__ == '__main__':
             save_models(disc, gen, directory=config.save_dir, label=config.save_label)
 
     elif config.mode == 'sampling':
-        raise NotImplementedError
+        gen = get_generator()
+        noise_dataset = get_noise((EMBEDDING_SIZE,))
+        if config.load_dir is not None:
+            load_models(None, gen, directory=config.load_dir, label=config.load_label)
+        sample_images(gen, noise_dataset, count=config.images, directory=config.sample_dir)
 
