@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import itertools
-import logging
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
@@ -19,9 +18,7 @@ def train(disc, gen, real_dataset, noise_dataset, n_iter=100, k=5, batch_size=10
     gen_target = torch.ones(batch_size)
 
     for i in range(n_iter):
-        logging.debug('Iteration: %d', i)
         for noise_batch, real_batch in itertools.islice(zip(noise_loader, data_loader), k):
-            logging.debug('D-iteration')
             with torch.no_grad():
                 fake_batch = gen(noise_batch)
                 batch = torch.cat((fake_batch, real_batch))
@@ -32,7 +29,6 @@ def train(disc, gen, real_dataset, noise_dataset, n_iter=100, k=5, batch_size=10
             optim_d.zero_grad()
 
         for noise_batch in itertools.islice(noise_loader, 1):
-            logging.debug('G-iteration')
             fake_batch = gen(noise_batch)
             logits = disc(fake_batch).squeeze(-1)
             loss = F.binary_cross_entropy_with_logits(logits, target=gen_target)
@@ -41,14 +37,12 @@ def train(disc, gen, real_dataset, noise_dataset, n_iter=100, k=5, batch_size=10
             optim_g.zero_grad()
 
         # Some callbacks here
-    logging.info('Training completed')
 
 
 if __name__ == '__main__':
     EMBEDDING_SIZE = 256
 
     # stupid but fast-to-implement behavior: call train many times and sample image after each one
-    logging.basicConfig(level=logging.DEBUG)
     import matplotlib.pyplot as plt
     from tqdm import trange
     disc = get_discriminator()
