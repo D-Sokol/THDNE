@@ -8,7 +8,7 @@ from tqdm import trange
 
 from dataset import get_CJK, get_noise
 from models import get_discriminator, get_generator
-from parser import get_parser
+from parser import get_parser, check_sanity
 from callbacks import *
 
 
@@ -59,7 +59,15 @@ if __name__ == '__main__':
 
     parser = get_parser()
     config = parser.parse_args()
-    # TODO: check arguments
+
+    if not config.force_mode:
+        problems = check_sanity(config)
+        if problems:
+            print("Discrepancies in command line arguments detected:")
+            for problem in problems:
+                print(" *", problem)
+            print("Use flag --force if you are really want to run script with these parameters.")
+            exit(2)
 
     if config.mode == 'train':
         disc = get_discriminator()

@@ -14,6 +14,8 @@ def get_parser():
     parser.add_argument('--load-label', metavar="LABEL",
                         help="Optional label to select correct pair from load directory")
 
+    parser.add_argument('--force', '--no-checks', action='store_true', help="Ignore all arguments sanity checks", dest='force_mode')
+
     training_group = parser.add_argument_group(title="Training", description="Settings affecting networks training process")
     training_group.add_argument('--iter', type=int, default=1000, help="Number of training iterations")
     training_group.add_argument('--batch', type=int, default=64, help="Batch size")
@@ -38,8 +40,43 @@ def get_parser():
     return parser
 
 
+def check_sanity(config: argparse.Namespace) -> list:
+    problems = []
+
+    if config.histogram_dir is not None and not config.histogram_dir.is_dir():
+        problems.append("histogram_dir: not a directory")
+    if config.load_dir is not None and not config.load_dir.is_dir():
+        problems.append("load_dir: not a directory")
+    if config.sample_dir is not None and not config.sample_dir.is_dir():
+        problems.append("sample_dir: not a directory")
+    if config.save_dir is not None and not config.save_dir.is_dir():
+        problems.append("save_dir: not a directory")
+
+    if config.load_dir is None and config.load_label is not None:
+        problems.append("load_label: no effect without load_dir")
+    if config.save_dir is None and config.save_label is not None:
+        problems.append("save_label: no effect without save_dir")
+
+    if config.mode == 'train':
+        if config.save_dir is None:
+            problems.append("save_dir: no models saving after training")
+    elif config.mode == 'sampling':
+        if config.load_dir is None:
+            problems.append("load_dir: sampling from untrained model")
+        if config.sample_dir is None:
+            problems.append("sample_dir: is required for sampling mode")
+        if config.histogram_dir is not None:
+            problems.append("histogram_dir: no effect in sampling mode")
+        if config.save_dir is not None:
+            problems.append("save_dir: no effect in sampling mode")
+
+    return problems
+
+
 if __name__ == '__main__':
     parser = get_parser()
     config = parser.parse_args()
     print(config)
+    print("FORCE mode:", config.force_mode)
+    print(*check_sanity(config), sep='\n')
 
