@@ -27,11 +27,16 @@ def load_models(disc, gen, directory=pathlib.Path(), label=None):
     gen.load_state_dict(torch.load(_filename(directory, label, False)))
 
 
-def _generate_sample_name(directory, name, count, total_count=1, ext='png'):
-    return str(directory / f"{name}{-count if total_count != 1 else ''}.{ext}")
+def _generate_sample_name(directory, name, index=None, iteration=None, ext='png'):
+    return str(directory / "{name}{iteration_part}{index_part}.{ext}".format(
+        name=name,
+        iteration_part=-iteration if iteration is not None else "",
+        index_part=-index if index is not None else "",
+        ext=ext
+    ))
 
 
-def sample_images(gen, noise_dataset, count=1,
+def sample_images(gen, noise_dataset, count=1, iteration=None,
                   directory=pathlib.Path(), name='sample', ext='png'):
     directory = pathlib.Path(directory)
     assert directory.is_dir()
@@ -42,12 +47,15 @@ def sample_images(gen, noise_dataset, count=1,
         image_stack = gen(noise).numpy().clip(0, 1).squeeze(1)
 
     for i, image in enumerate(image_stack, 1):
-        filename = _generate_sample_name(directory, name, i, count, ext)
+        filename = _generate_sample_name(directory, name, index=i, iteration=iteration, ext=ext)
         plt.imsave(filename, image, cmap='gray')
 
 
-def render_histograms(disc, gen, real_dataset, noise_dataset, count=512,
+def render_histograms(disc, gen, real_dataset, noise_dataset, iteration, count=512,
                       directory=pathlib.Path()):
+    directory = pathlib.Path(directory)
+    assert directory.is_dir()
+
     noise_loader = DataLoader(noise_dataset, batch_size=count)
     data_loader = DataLoader(real_dataset, batch_size=count)
 
@@ -68,6 +76,6 @@ def render_histograms(disc, gen, real_dataset, noise_dataset, count=512,
     plt.xlabel('Estimated probability')
     plt.title('Real samples')
 
-    plt.savefig(_generate_sample_name(pathlib.Path(directory), 'histograms', 1, 1))
+    plt.savefig(_generate_sample_name(directory, name='histograms', iteration=iteration))
     plt.clf()
 

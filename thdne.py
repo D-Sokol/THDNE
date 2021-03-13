@@ -48,10 +48,10 @@ def train(disc, gen, real_dataset, noise_dataset,
             optim_g.zero_grad()
 
         if histogram_dir is not None and i % histogram_freq == 0:
-            render_histograms(disc, gen, real_dataset, noise_dataset, directory=histogram_dir)
+            render_histograms(disc, gen, real_dataset, noise_dataset, iteration=i+1, directory=histogram_dir)
 
         if sample_dir is not None and i % sample_freq == 0:
-            sample_images(gen, noise_dataset, count=images, directory=sample_dir)
+            sample_images(gen, noise_dataset, count=images, iteration=i+1, directory=sample_dir)
 
 
 if __name__ == '__main__':
