@@ -67,14 +67,14 @@ def render_histograms(disc, gen, real_dataset, noise_dataset, iteration, count=5
         probas_fake_is_real = torch.sigmoid(disc(fake_batch).squeeze(-1)).cpu().numpy()
 
     plt.subplot(1, 2, 1)
-    plt.hist(probas_real_is_real)
+    plt.hist(probas_real_is_real, bins=count//20, range=(0, 1))
     plt.xlabel('Estimated probability')
     plt.title('Real samples')
 
     plt.subplot(1, 2, 2)
-    plt.hist(probas_fake_is_real)
+    plt.hist(probas_fake_is_real, bins=count//20, range=(0, 1))
     plt.xlabel('Estimated probability')
-    plt.title('Real samples')
+    plt.title('Fake samples')
 
     plt.savefig(_generate_sample_name(directory, name='histograms', iteration=iteration))
     plt.clf()
