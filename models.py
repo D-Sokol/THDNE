@@ -31,15 +31,17 @@ def get_discriminator():
 
 def get_generator(embedding_size=256):
     return nn.Sequential(
-        nn.Linear(embedding_size, 16*8*8),
+        nn.Linear(embedding_size, 32*8*8),
         nn.LeakyReLU(),
-        Reshape((16, 8, 8)),
-        nn.ConvTranspose2d(16, 32, (5,5)),
-        nn.LeakyReLU(),
+        Reshape((32, 8, 8)),
         nn.ConvTranspose2d(32, 64, (5,5)),
         nn.LeakyReLU(),
+        nn.ConvTranspose2d(64, 128, (5,5)),
+        nn.LeakyReLU(),
         nn.Upsample(scale_factor=2),
-        nn.ConvTranspose2d(64, 64, (5,5)),
+        nn.ConvTranspose2d(128, 64, (3,3)),
+        nn.LeakyReLU(),
+        nn.ConvTranspose2d(64, 64, (3,3)),
         nn.LeakyReLU(),
         nn.Conv2d(64, 1, (5,5))
     )
