@@ -21,11 +21,11 @@ def get_discriminator():
         nn.Conv2d(16, 32, (5,5)),
         nn.MaxPool2d(2),
         nn.LeakyReLU(),
-        nn.Conv2d(32, 64, (5,5)),
+        nn.Conv2d(32, 32, (5,5)),
         nn.MaxPool2d(2),
         nn.LeakyReLU(),
         nn.Flatten(),
-        nn.Linear(1024, 1)
+        nn.Linear(512, 1)
     )
 
 
